@@ -4,7 +4,7 @@ use sdl2::event::Event;
 use sdl2::keyboard::Keycode;
 use sdl2::pixels::Color;
 
-fn draw_linear_bezier_curve (
+fn draw_linear_bezier_curve(
     canvas: &mut sdl2::render::Canvas<sdl2::video::Window>,
     p0: sdl2::rect::Point,
     p1: sdl2::rect::Point,
@@ -27,7 +27,7 @@ fn draw_linear_bezier_curve (
     Ok(())
 }
 
-fn draw_quadratic_bezier_curve (
+fn draw_quadratic_bezier_curve(
     canvas: &mut sdl2::render::Canvas<sdl2::video::Window>,
     p0: sdl2::rect::Point,
     p1: sdl2::rect::Point,
@@ -41,8 +41,12 @@ fn draw_quadratic_bezier_curve (
             break;
         }
 
-        let x = (1.0 - t).powi(2) * f64::from(p0.x) + 2.0 * (1.0 - t) * t * f64::from(p1.x) + t.powi(2) * f64::from(p2.x);
-        let y = (1.0 - t).powi(2) * f64::from(p0.y) + 2.0 * (1.0 - t) * t * f64::from(p1.y) + t.powi(2) * f64::from(p2.y);
+        let x = (1.0 - t).powi(2) * f64::from(p0.x)
+            + 2.0 * (1.0 - t) * t * f64::from(p1.x)
+            + t.powi(2) * f64::from(p2.x);
+        let y = (1.0 - t).powi(2) * f64::from(p0.y)
+            + 2.0 * (1.0 - t) * t * f64::from(p1.y)
+            + t.powi(2) * f64::from(p2.y);
 
         canvas.draw_point(sdl2::rect::Point::new(x as i32, y as i32))?;
 
@@ -51,7 +55,7 @@ fn draw_quadratic_bezier_curve (
     Ok(())
 }
 
-fn draw_cubic_bezier_curve (
+fn draw_cubic_bezier_curve(
     canvas: &mut sdl2::render::Canvas<sdl2::video::Window>,
     p0: sdl2::rect::Point,
     p1: sdl2::rect::Point,
@@ -66,8 +70,14 @@ fn draw_cubic_bezier_curve (
             break;
         }
 
-        let x = (1.0 - t).powi(3) * f64::from(p0.x) + 3.0 * (1.0 - t).powi(2) * t * f64::from(p1.x) + 3.0 * (1.0 - t) * t.powi(2) * f64::from(p2.x) + t.powi(3) * f64::from(p3.x);
-        let y = (1.0 - t).powi(3) * f64::from(p0.y) + 3.0 * (1.0 - t).powi(2) * t * f64::from(p1.y) + 3.0 * (1.0 - t) * t.powi(2) * f64::from(p2.y) + t.powi(3) * f64::from(p3.y);
+        let x = (1.0 - t).powi(3) * f64::from(p0.x)
+            + 3.0 * (1.0 - t).powi(2) * t * f64::from(p1.x)
+            + 3.0 * (1.0 - t) * t.powi(2) * f64::from(p2.x)
+            + t.powi(3) * f64::from(p3.x);
+        let y = (1.0 - t).powi(3) * f64::from(p0.y)
+            + 3.0 * (1.0 - t).powi(2) * t * f64::from(p1.y)
+            + 3.0 * (1.0 - t) * t.powi(2) * f64::from(p2.y)
+            + t.powi(3) * f64::from(p3.y);
 
         canvas.draw_point(sdl2::rect::Point::new(x as i32, y as i32))?;
 
