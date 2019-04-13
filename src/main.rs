@@ -3,13 +3,14 @@ extern crate sdl2;
 use sdl2::event::Event;
 use sdl2::keyboard::Keycode;
 use sdl2::pixels::Color;
+use sdl2::gfx::primitives::DrawRenderer;
 
 fn draw_linear_bezier_curve(
     canvas: &mut sdl2::render::Canvas<sdl2::video::Window>,
     p0: sdl2::rect::Point,
     p1: sdl2::rect::Point,
 ) -> Result<(), String> {
-    canvas.set_draw_color(Color::RGB(0, 255, 0));
+    canvas.set_draw_color(Color::RGB(255, 0, 0));
 
     let mut t: f64 = 0.0;
     loop {
@@ -62,7 +63,7 @@ fn draw_cubic_bezier_curve(
     p2: sdl2::rect::Point,
     p3: sdl2::rect::Point,
 ) -> Result<(), String> {
-    canvas.set_draw_color(Color::RGB(0, 255, 0));
+    canvas.set_draw_color(Color::RGB(0, 0, 255));
 
     let mut t: f64 = 0.0;
     loop {
@@ -83,6 +84,13 @@ fn draw_cubic_bezier_curve(
 
         t += 0.0001;
     }
+    Ok(())
+}
+
+fn draw_point(canvas: &mut sdl2::render::Canvas<sdl2::video::Window>, point: sdl2::rect::Point) -> Result<(), String> {
+    const RADIUS: i16 = 5;
+    const COLOR: u32 = 0xFF0000FFu32;
+    canvas.filled_circle(point.x as i16, point.y as i16, RADIUS, COLOR)?;
     Ok(())
 }
 
@@ -109,6 +117,11 @@ fn main() -> Result<(), String> {
     draw_quadratic_bezier_curve(&mut canvas, p0, p1, p2)?;
     draw_cubic_bezier_curve(&mut canvas, p0, p1, p2, p3)?;
 
+    draw_point(&mut canvas, p0)?;
+    draw_point(&mut canvas, p1)?;
+    draw_point(&mut canvas, p2)?;
+    draw_point(&mut canvas, p3)?;
+
     canvas.present();
     let mut event_pump = sdl_context.event_pump().unwrap();
 
@@ -120,6 +133,7 @@ fn main() -> Result<(), String> {
                     keycode: Some(Keycode::Escape),
                     ..
                 } => break 'main_loop,
+                Event::MouseButtonDown {x, y, ..} => println!("{}, {}", x, y),
                 _ => {}
             }
         }
