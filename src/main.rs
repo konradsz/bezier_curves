@@ -28,10 +28,8 @@ fn draw_linear_bezier_curve(
             break;
         }
 
-        let x = (1.0 - t) * f64::from(p0.position.x) + t * f64::from(p1.position.x);
-        let y = (1.0 - t) * f64::from(p0.position.y) + t * f64::from(p1.position.y);
-
-        canvas.draw_point(sdl2::rect::Point::new(x as i32, y as i32))?;
+        let result = (1.0 - t) * p0 + t * p1;
+        canvas.draw_point(result.position)?;
 
         t += 0.0001;
     }
@@ -52,14 +50,8 @@ fn draw_quadratic_bezier_curve(
             break;
         }
 
-        let x = (1.0 - t).powi(2) * f64::from(p0.position.x)
-            + 2.0 * (1.0 - t) * t * f64::from(p1.position.x)
-            + t.powi(2) * f64::from(p2.position.x);
-        let y = (1.0 - t).powi(2) * f64::from(p0.position.y)
-            + 2.0 * (1.0 - t) * t * f64::from(p1.position.y)
-            + t.powi(2) * f64::from(p2.position.y);
-
-        canvas.draw_point(sdl2::rect::Point::new(x as i32, y as i32))?;
+        let result = (1.0 - t).powi(2) * p0 + 2.0 * (1.0 - t) * t * p1 + t.powi(2) * p2;
+        canvas.draw_point(result.position)?;
 
         t += 0.0001;
     }
@@ -81,16 +73,8 @@ fn draw_cubic_bezier_curve(
             break;
         }
 
-        let x = (1.0 - t).powi(3) * f64::from(p0.position.x)
-            + 3.0 * (1.0 - t).powi(2) * t * f64::from(p1.position.x)
-            + 3.0 * (1.0 - t) * t.powi(2) * f64::from(p2.position.x)
-            + t.powi(3) * f64::from(p3.position.x);
-        let y = (1.0 - t).powi(3) * f64::from(p0.position.y)
-            + 3.0 * (1.0 - t).powi(2) * t * f64::from(p1.position.y)
-            + 3.0 * (1.0 - t) * t.powi(2) * f64::from(p2.position.y)
-            + t.powi(3) * f64::from(p3.position.y);
-
-        canvas.draw_point(sdl2::rect::Point::new(x as i32, y as i32))?;
+        let result = (1.0 - t).powi(3) * p0 + 3.0 * (1.0 - t).powi(2) * t * p1 + 3.0 * (1.0 - t) * t.powi(2) * p2 + t.powi(3) * p3;
+        canvas.draw_point(result.position)?;
 
         t += 0.0001;
     }
@@ -105,7 +89,7 @@ struct ControlPoint {
 }
 
 impl ControlPoint {
-    fn new(position: sdl2::rect::Point) -> ControlPoint {
+    fn new(position: sdl2::rect::Point) -> Self {
         ControlPoint {
             position,
             draw_radius: 6,
@@ -158,6 +142,28 @@ impl ControlPoint {
     fn move_to(&mut self, x: i32, y: i32) {
         self.position.x = x;
         self.position.y = y;
+    }
+}
+
+impl std::ops::Mul<&ControlPoint> for f64 {
+    type Output = ControlPoint;
+
+    fn mul(self, rhs: &ControlPoint) -> ControlPoint {
+        ControlPoint {
+            position: sdl2::rect::Point::new((f64::from(rhs.position.x) * self) as i32, (f64::from(rhs.position.y) * self) as i32),
+            ..*rhs
+        }
+    }
+}
+
+impl std::ops::Add<ControlPoint> for ControlPoint {
+    type Output = ControlPoint;
+
+    fn add(self, rhs: ControlPoint) -> ControlPoint {
+        ControlPoint {
+            position: sdl2::rect::Point::new(self.position.x + rhs.position.x, self.position.y + rhs.position.y),
+            ..rhs
+        }
     }
 }
 
