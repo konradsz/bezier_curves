@@ -5,82 +5,6 @@ use sdl2::gfx::primitives::DrawRenderer;
 use sdl2::keyboard::Keycode;
 use sdl2::pixels::Color;
 
-fn draw_points(
-    canvas: &mut sdl2::render::Canvas<sdl2::video::Window>,
-    points: &[ControlPoint],
-) -> Result<(), String> {
-    for point in points {
-        point.draw(canvas)?;
-    }
-    Ok(())
-}
-
-fn draw_linear_bezier_curve(
-    canvas: &mut sdl2::render::Canvas<sdl2::video::Window>,
-    p0: &ControlPoint,
-    p1: &ControlPoint,
-) -> Result<(), String> {
-    canvas.set_draw_color(Color::RGB(255, 0, 0));
-
-    let mut t: f64 = 0.0;
-    loop {
-        if t >= 1.0 {
-            break;
-        }
-
-        let result = (1.0 - t) * p0 + t * p1;
-        canvas.draw_point(result.position)?;
-
-        t += 0.0001;
-    }
-    Ok(())
-}
-
-fn draw_quadratic_bezier_curve(
-    canvas: &mut sdl2::render::Canvas<sdl2::video::Window>,
-    p0: &ControlPoint,
-    p1: &ControlPoint,
-    p2: &ControlPoint,
-) -> Result<(), String> {
-    canvas.set_draw_color(Color::RGB(0, 255, 0));
-
-    let mut t: f64 = 0.0;
-    loop {
-        if t >= 1.0 {
-            break;
-        }
-
-        let result = (1.0 - t).powi(2) * p0 + 2.0 * (1.0 - t) * t * p1 + t.powi(2) * p2;
-        canvas.draw_point(result.position)?;
-
-        t += 0.0001;
-    }
-    Ok(())
-}
-
-fn draw_cubic_bezier_curve(
-    canvas: &mut sdl2::render::Canvas<sdl2::video::Window>,
-    p0: &ControlPoint,
-    p1: &ControlPoint,
-    p2: &ControlPoint,
-    p3: &ControlPoint,
-) -> Result<(), String> {
-    canvas.set_draw_color(Color::RGB(0, 0, 255));
-
-    let mut t: f64 = 0.0;
-    loop {
-        if t >= 1.0 {
-            break;
-        }
-
-        let result = (1.0 - t).powi(3) * p0 + 3.0 * (1.0 - t).powi(2) * t * p1 + 3.0 * (1.0 - t) * t.powi(2) * p2 + t.powi(3) * p3;
-        canvas.draw_point(result.position)?;
-
-        t += 0.0001;
-    }
-    Ok(())
-}
-
 struct ControlPoint {
     position: sdl2::rect::Point,
     draw_radius: i16,
@@ -150,7 +74,10 @@ impl std::ops::Mul<&ControlPoint> for f64 {
 
     fn mul(self, rhs: &ControlPoint) -> ControlPoint {
         ControlPoint {
-            position: sdl2::rect::Point::new((f64::from(rhs.position.x) * self) as i32, (f64::from(rhs.position.y) * self) as i32),
+            position: sdl2::rect::Point::new(
+                (f64::from(rhs.position.x) * self) as i32,
+                (f64::from(rhs.position.y) * self) as i32,
+            ),
             ..*rhs
         }
     }
@@ -161,10 +88,92 @@ impl std::ops::Add<ControlPoint> for ControlPoint {
 
     fn add(self, rhs: ControlPoint) -> ControlPoint {
         ControlPoint {
-            position: sdl2::rect::Point::new(self.position.x + rhs.position.x, self.position.y + rhs.position.y),
+            position: sdl2::rect::Point::new(
+                self.position.x + rhs.position.x,
+                self.position.y + rhs.position.y,
+            ),
             ..rhs
         }
     }
+}
+
+fn draw_points(
+    canvas: &mut sdl2::render::Canvas<sdl2::video::Window>,
+    points: &[ControlPoint],
+) -> Result<(), String> {
+    for point in points {
+        point.draw(canvas)?;
+    }
+    Ok(())
+}
+
+fn draw_linear_bezier_curve(
+    canvas: &mut sdl2::render::Canvas<sdl2::video::Window>,
+    p0: &ControlPoint,
+    p1: &ControlPoint,
+) -> Result<(), String> {
+    canvas.set_draw_color(Color::RGB(255, 0, 0));
+
+    let mut t: f64 = 0.0;
+    loop {
+        if t >= 1.0 {
+            break;
+        }
+
+        let result = (1.0 - t) * p0 + t * p1;
+        canvas.draw_point(result.position)?;
+
+        t += 0.0001;
+    }
+    Ok(())
+}
+
+fn draw_quadratic_bezier_curve(
+    canvas: &mut sdl2::render::Canvas<sdl2::video::Window>,
+    p0: &ControlPoint,
+    p1: &ControlPoint,
+    p2: &ControlPoint,
+) -> Result<(), String> {
+    canvas.set_draw_color(Color::RGB(0, 255, 0));
+
+    let mut t: f64 = 0.0;
+    loop {
+        if t >= 1.0 {
+            break;
+        }
+
+        let result = (1.0 - t).powi(2) * p0 + 2.0 * (1.0 - t) * t * p1 + t.powi(2) * p2;
+        canvas.draw_point(result.position)?;
+
+        t += 0.0001;
+    }
+    Ok(())
+}
+
+fn draw_cubic_bezier_curve(
+    canvas: &mut sdl2::render::Canvas<sdl2::video::Window>,
+    p0: &ControlPoint,
+    p1: &ControlPoint,
+    p2: &ControlPoint,
+    p3: &ControlPoint,
+) -> Result<(), String> {
+    canvas.set_draw_color(Color::RGB(0, 0, 255));
+
+    let mut t: f64 = 0.0;
+    loop {
+        if t >= 1.0 {
+            break;
+        }
+
+        let result = (1.0 - t).powi(3) * p0
+            + 3.0 * (1.0 - t).powi(2) * t * p1
+            + 3.0 * (1.0 - t) * t.powi(2) * p2
+            + t.powi(3) * p3;
+        canvas.draw_point(result.position)?;
+
+        t += 0.0001;
+    }
+    Ok(())
 }
 
 fn main() -> Result<(), String> {
