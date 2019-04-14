@@ -7,7 +7,7 @@ use sdl2::pixels::Color;
 
 fn draw_points(
     canvas: &mut sdl2::render::Canvas<sdl2::video::Window>,
-    points: &[Point],
+    points: &[ControlPoint],
 ) -> Result<(), String> {
     for point in points {
         point.draw(canvas)?;
@@ -17,8 +17,8 @@ fn draw_points(
 
 fn draw_linear_bezier_curve(
     canvas: &mut sdl2::render::Canvas<sdl2::video::Window>,
-    p0: &Point,
-    p1: &Point,
+    p0: &ControlPoint,
+    p1: &ControlPoint,
 ) -> Result<(), String> {
     canvas.set_draw_color(Color::RGB(255, 0, 0));
 
@@ -40,9 +40,9 @@ fn draw_linear_bezier_curve(
 
 fn draw_quadratic_bezier_curve(
     canvas: &mut sdl2::render::Canvas<sdl2::video::Window>,
-    p0: &Point,
-    p1: &Point,
-    p2: &Point,
+    p0: &ControlPoint,
+    p1: &ControlPoint,
+    p2: &ControlPoint,
 ) -> Result<(), String> {
     canvas.set_draw_color(Color::RGB(0, 255, 0));
 
@@ -68,10 +68,10 @@ fn draw_quadratic_bezier_curve(
 
 fn draw_cubic_bezier_curve(
     canvas: &mut sdl2::render::Canvas<sdl2::video::Window>,
-    p0: &Point,
-    p1: &Point,
-    p2: &Point,
-    p3: &Point,
+    p0: &ControlPoint,
+    p1: &ControlPoint,
+    p2: &ControlPoint,
+    p3: &ControlPoint,
 ) -> Result<(), String> {
     canvas.set_draw_color(Color::RGB(0, 0, 255));
 
@@ -97,16 +97,16 @@ fn draw_cubic_bezier_curve(
     Ok(())
 }
 
-struct Point {
+struct ControlPoint {
     position: sdl2::rect::Point,
     draw_radius: i16,
     draw_color: sdl2::pixels::Color,
     selected: bool,
 }
 
-impl Point {
-    fn new(position: sdl2::rect::Point) -> Point {
-        Point {
+impl ControlPoint {
+    fn new(position: sdl2::rect::Point) -> ControlPoint {
+        ControlPoint {
             position,
             draw_radius: 6,
             draw_color: sdl2::pixels::Color {
@@ -172,10 +172,10 @@ fn main() -> Result<(), String> {
     let mut canvas = window.into_canvas().build().unwrap();
 
     let mut points = vec![
-        Point::new(sdl2::rect::Point::new(100, 50)),
-        Point::new(sdl2::rect::Point::new(250, 800)),
-        Point::new(sdl2::rect::Point::new(1300, 200)),
-        Point::new(sdl2::rect::Point::new(1500, 800)),
+        ControlPoint::new(sdl2::rect::Point::new(100, 50)),
+        ControlPoint::new(sdl2::rect::Point::new(250, 800)),
+        ControlPoint::new(sdl2::rect::Point::new(1300, 200)),
+        ControlPoint::new(sdl2::rect::Point::new(1500, 800)),
     ];
 
     let mut event_pump = sdl_context.event_pump().unwrap();
